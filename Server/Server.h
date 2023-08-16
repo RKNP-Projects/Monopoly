@@ -1,8 +1,7 @@
-#include <WinSock2.h>
 #include "Connection.h"
-#include <vector>
+#include <map>
 
-using std::vector;
+using std::map;
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -10,13 +9,12 @@ class Server
 {
 private:
 	SOCKET sock;
-	vector<Connection> connections;
+	map<SOCKET, Connection*> connections;
+
+	void handleConnection(SOCKET conSock);
 
 public:
 	Server();
-	void sBind(int port);
-	void sListen();
-	void sAccept();
-
+	void bindAndListen(int port);
 };
 

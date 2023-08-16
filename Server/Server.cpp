@@ -8,7 +8,7 @@ Server::Server()
 	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 }
 
-void Server::sBind(int port)
+void Server::bindAndListen(int port)
 {
 	sockaddr_in address;
 	address.sin_family= AF_INET;
@@ -16,14 +16,32 @@ void Server::sBind(int port)
 	address.sin_port = htons(port);
 	
 	bind(sock, (SOCKADDR*)&address, sizeof(address));
+	listen(sock, SOMAXCONN);
+
+	while (true)
+	{
+		SOCKET conSock = accept(sock, NULL, NULL);
+		handleConnection(conSock);
+	}
 };
 
-void Server::sListen()
+void Server::handleConnection(SOCKET conSock)
 {
-	listen(sock, SOMAXCONN);
-}
+	connections[conSock] = new Connection();
 
-void Server::sAccept()
-{
-	SOCKET con = accept(sock, NULL, NULL);
+	char* buff;
+	int dataLen = 3;
+
+	
+	while (connections[conSock])
+	{
+		buff = new char[dataLen+1];
+		buff[dataLen] = 0;
+		if (!recv(conSock, buff, dataLen, NULL) || WSAGetLastError() == WSAECONNRESET || WSAGetLastError() == WSAENOTSOCK)
+			break;
+		std::cout << buff << std::endl;
+		delete buff;
+	}
+
+	std::cout << "connecton is closed" << std::endl;
 }

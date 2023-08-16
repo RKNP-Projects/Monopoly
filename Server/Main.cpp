@@ -4,7 +4,5 @@
 int main()
 {
     Server server;
-    server.sBind(8080);
-    server.sListen();
-    server.sAccept();
+    server.bindAndListen(8080);
 }
