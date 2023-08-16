@@ -1,20 +1,29 @@
-﻿// Server.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+#include "Server.h"
 
-#include <iostream>
-
-int main()
+Server::Server()
 {
-    std::cout << "Hello World!\n";
+	WSADATA wsaData;
+	WSAStartup(MAKEWORD(2,2), &wsaData);
+
+	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+void Server::sBind(int port)
+{
+	sockaddr_in address;
+	address.sin_family= AF_INET;
+	address.sin_addr.s_addr = INADDR_ANY;
+	address.sin_port = htons(port);
+	
+	bind(sock, (SOCKADDR*)&address, sizeof(address));
+};
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+void Server::sListen()
+{
+	listen(sock, SOMAXCONN);
+}
+
+void Server::sAccept()
+{
+	SOCKET con = accept(sock, NULL, NULL);
+}
