@@ -21,7 +21,7 @@ void Server::bindAndListen(int port)
 	while (true)
 	{
 		SOCKET conSock = accept(sock, NULL, NULL);
-		handleConnection(conSock);
+		conThreads[conSock] = new thread(&Server::handleConnection, this, conSock);
 	}
 };
 
@@ -44,4 +44,8 @@ void Server::handleConnection(SOCKET conSock)
 	}
 
 	std::cout << "connecton is closed" << std::endl;
+
+	connections.erase(conSock);
+	conThreads.erase(conSock);
+	closesocket(conSock);
 }
